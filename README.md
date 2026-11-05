@@ -4,7 +4,7 @@
 
 A Python-based quantitative research project combining cross-sectional equity momentum with pullback-based trade selection. The system brings together market-data preparation, security selection, portfolio simulation, and operational controls in a structured research workflow.
 
-**This public project overview is intentionally documentation-only.** The strategy implementation, detailed parameters, data, credentials, and operational artifacts are maintained separately and are not distributed here.
+**This repository includes a curated source release and synthetic tests.** Market data, credentials, production state, generated outputs, and account-specific information are not included.
 
 ## Historical backtest snapshot
 
@@ -52,13 +52,20 @@ flowchart LR
   C --> H[Stock-focus research screener]
 ```
 
+## Source and tests
+
+- `src/` contains the data pipeline, screening, backtesting, and operational modules.
+- `research_stochastic/` contains the stochastic research code and its tests.
+- `tests/` contains synthetic tests; `config.example.yaml` and `.env.example` are sanitized examples with no credentials.
+
+To run the available tests, install Python dependencies from `requirements.txt` and run `python -m pytest tests research_stochastic/tests` from the repository root. Copy `config.example.yaml` to `config.yaml` and supply appropriately licensed data separately before attempting data-dependent workflows. The public package excludes market data, production baselines, local state, operational launchers, and the Sobol direction-number data used by some stochastic routines. Tests that require the omitted launcher or Sobol file are explicitly skipped when those files are absent; other data-dependent workflows require their own inputs. The example configuration is not a production deployment.
+
 ## Scope and disclosure
 
-This is an independent quantitative research and software-engineering project. This overview does **not** present audited performance, offer an investment product, distribute executable strategy code, or recommend any security or trade. Backtests depend on data quality, assumptions, and execution modeling; past or simulated results do not guarantee future outcomes. Trading can result in substantial financial loss.
+This is an independent quantitative research and software-engineering project. The results above are simulated and unaudited. This repository does not offer an investment product or recommend any security or trade. Backtests depend on data quality, assumptions, and execution modeling; past or simulated results do not guarantee future outcomes. Trading can result in substantial financial loss.
 
 ## Source availability
 
-The project source and underlying datasets are not distributed through this public overview. **GitHub does not provide a way to prevent downloading or copying files contained in a public repository.** Nothing in this public package purports to impose a technical download restriction.
+The curated source and synthetic tests are available in this repository; underlying market datasets and private operational artifacts are not included. Public files can be copied or downloaded. No license is granted beyond any rights expressly stated in the accompanying notice.
 
 © 2026. All rights reserved by the original project author.
-

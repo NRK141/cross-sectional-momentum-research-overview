@@ -1,0 +1,78 @@
+project:
+  name: cross_sectional_momentum_pullback
+  release: Foundation 2.2 / v0.2.2
+  timezone: America/New_York
+data:
+  raw_crsp_csv: data/raw/market_data.csv
+  source_start_date: '2000-01-01'
+  feature_start_date: '2014-01-01'
+  research_start_date: '2015-01-01'
+  score_start_date: '2019-01-01'
+  normalized_dir: data/normalized
+  feature_dir: data/features
+  benchmark_dir: data/benchmarks
+  manifest_dir: data/manifests
+  temp_dir: data/duckdb_tmp
+compute:
+  threads: 12
+  memory_limit: 12GB
+  preserve_insertion_order: false
+universe:
+  allowed_primary_exch:
+  - N
+  - A
+  - Q
+  allowed_security_type:
+  - EQTY
+  allowed_security_subtype:
+  - COM
+  allowed_share_type:
+  - NS
+  min_price: 5.0
+  min_adv20_dollars: 10000000.0
+  min_history_days: 252
+screener:
+  rebalance: monthly
+  top_n: 15
+  min_12_1_momentum: 0.0
+  min_6_1_momentum: 0.0
+  require_close_above_sma100: true
+  require_close_above_sma200: true
+  score_weights:
+    momentum_3_1: 0.2
+    momentum_6_1: 0.35
+    momentum_12_1: 0.35
+    trend_strength: 0.1
+entry:
+  min_5d_pullback: -0.12
+  max_5d_pullback: -0.015
+  max_rsi2: 40.0
+  min_distance_from_20d_high: -0.15
+  max_distance_from_20d_high: -0.015
+  require_positive_1d_resumption: true
+  require_close_above_sma50: true
+  max_new_entries_per_day: 3
+  candidate_cooldown_days: 3
+portfolio:
+  initial_capital: 100000.0
+  max_gross_exposure: 0.8
+  max_active_positions: 8
+  base_position_weight: 0.125
+  max_position_weight: 0.15
+  max_sector_weight: 0.3
+exit:
+  initial_stop_pct: 0.04
+  trailing_activates_at_gain: 0.05
+  trailing_stop_pct_from_peak: 0.03
+  trend_break_sma: 20
+  minimum_holding_days_before_trend_exit: 3
+  maximum_holding_days: 30
+execution:
+  mode: next_close
+  transaction_cost_bps_per_side: 5.0
+  annualization_days: 252
+benchmarks:
+  primary: SPY
+  comparisons:
+  - QQQ
+  - DIA

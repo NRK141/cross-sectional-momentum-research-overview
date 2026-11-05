@@ -1,0 +1,48 @@
+{
+  "status": "TEMPLATE_ONLY_DO_NOT_RUN_YET",
+  "baseline_patch": "2.5.1",
+  "development_window": "2015-01-01 through 2024-12-31",
+  "warmup_history_start": "2014-01-01",
+  "holdout": "2025-present remains locked and excluded from all objectives",
+  "purpose": "Scaffold for the next staged combination sweep after the structural baseline is accepted.",
+  "fixed_live_constraints": {
+    "max_active_positions": 2,
+    "fixed_position_weight": 0.5,
+    "target_gross_exposure": 1.0,
+    "max_gross_exposure": 1.0
+  },
+  "candidate_axes_for_next_patch": {
+    "entry_schedule": [
+      "MONTH_END_PLUS_WEEKLY_REFILL",
+      "WEEKLY_ONLY",
+      "MONTH_END_ONLY"
+    ],
+    "min_expected_shortfall_5": [
+      -0.35,
+      -0.45,
+      -0.55
+    ],
+    "max_probability_loss_10": [
+      0.3,
+      0.4,
+      0.5
+    ],
+    "emergency_stop_pct": [
+      0.1,
+      0.15,
+      0.2
+    ],
+    "max_holding_days": [
+      15,
+      20,
+      30
+    ],
+    "negative_drift_rechecks_required": [
+      1,
+      2,
+      3
+    ]
+  },
+  "optimizer_note": "These are placeholders, not approved search ranges. Final ranges should be chosen only after reviewing the clean Patch 2.5.1 structural baseline and source-split/non-overlap diagnostics.",
+  "calibration_backfill": "NORMALIZED_CRSP_DYNAMIC_PRE_FEATURE_BACKFILL_TO_504_GLOBAL_SESSIONS"
+}

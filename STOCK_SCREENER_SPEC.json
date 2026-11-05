@@ -1,0 +1,92 @@
+{
+  "schema_version": 2,
+  "feature": "F2.2_STOCK_FOCUS_SCREENER",
+  "strategy_release": "Foundation 2.2 / v0.2.2",
+  "patch": "2.1.4",
+  "role": "STOCK_SELECTION_ONLY",
+  "top_n": 15,
+  "evaluation_start": "2019-01-01",
+  "current_universe": "stocks with eligible=true on the latest available feature date",
+  "historical_entry_universe": "all historically eligible sessions for each current-universe stock",
+  "monthly_leadership_gate": false,
+  "reason_monthly_leadership_gate_is_false": "The stock-focus screener itself selects the 15 names. Requiring the existing monthly Top-15 leadership gate would make the screen circular and would not reproduce the requested per-stock historical F2.2 evaluation.",
+  "methodology_reference": "Original mean-reversion stock screener structure: standalone per-stock backtest -> Sharpe/CAGR/MaxDD/Trades -> Calmar -> hard filters -> 0-1 min-max normalization -> 30/30/30/10 composite ranking.",
+  "strategy_rules": "Frozen F2.2 entry filters, exit rules, next-security-session-close entry execution, same-close exits, cooldown, and transaction costs are loaded from config.yaml without modification. Production F2.2 portfolio sizing is intentionally NOT used by this standalone stock-ranking tool.",
+  "capital_model": {
+    "mode": "fixed_dollar_standalone",
+    "initial_capital_usd": 5000.0,
+    "position_dollars_per_trade": 2000.0,
+    "fraction_of_initial_capital": 0.4,
+    "share_model": "fractional_equivalent",
+    "one_position_per_stock": true,
+    "note": "$2,000 is 40% of the independent $5,000 standalone account. Fixed dollar notional is used on every trade so ranking is not distorted by F2.2 production's 12.5% portfolio weight or by whole-share price rounding."
+  },
+  "terminal_rule": "Reject and rerun any unresolved final position entry; never score a forced terminal liquidation.",
+  "minimum_evidence": {
+    "closed_trades_minimum": 20,
+    "cagr_strictly_greater_than": 0.0,
+    "sharpe_strictly_greater_than": 0.7,
+    "calmar_strictly_greater_than": 0.0
+  },
+  "score": {
+    "method": "0-1 min-max normalization among stocks passing hard filters, matching the original screener methodology",
+    "weights": {
+      "sharpe": 0.3,
+      "calmar": 0.3,
+      "cagr": 0.3,
+      "closed_trades": 0.1
+    },
+    "score_scale": "0_to_1",
+    "trade_count_cap": null,
+    "profit_factor_in_score": false,
+    "profit_factor_is_filter": false
+  },
+  "diagnostics_only": [
+    "profit_factor",
+    "average_net_trade_return",
+    "median_net_trade_return",
+    "win_rate",
+    "annualized_volatility",
+    "history_sessions",
+    "boundary_entry_rejections",
+    "raw_cagr",
+    "raw_sharpe",
+    "raw_calmar",
+    "raw_max_drawdown",
+    "raw_closed_trades",
+    "total_net_trade_pnl_usd",
+    "largest_trade_net_pnl_usd",
+    "largest_trade_pnl_share",
+    "concentration_adjusted",
+    "excluded_trade_entry_date",
+    "excluded_trade_exit_date"
+  ],
+  "outputs": {
+    "directory": "outputs/stock_screener",
+    "top15": "top_15_stocks.csv",
+    "ranked": "eligible_ranked_stocks.csv",
+    "all_results": "all_stock_results.csv",
+    "trades": "standalone_trade_log.csv",
+    "ticker_list": "top_15_tickers.txt",
+    "manifest": "data/manifests/stock_screener_success.json"
+  },
+  "non_goals": [
+    "No entry signals",
+    "No exit signals",
+    "No live position tracking",
+    "No portfolio-level allocation across the Top 15",
+    "No change to outputs/screener/monthly_rankings.csv",
+    "No change to the frozen F2.2 production engine or config"
+  ],
+  "single_trade_concentration": {
+    "enabled": true,
+    "threshold_strictly_greater_than": 0.75,
+    "basis": "largest positive completed-trade net P&L in USD divided by total completed-trade net P&L in USD at the end of the standalone backtest",
+    "denominator_requirement": "total completed-trade net P&L must be positive",
+    "action": "exclude exactly that one largest positive completed trade from ranking metrics and recompute the stock once",
+    "recursive": false,
+    "preserve_trade_in_audit_log": true,
+    "ranking_effect": "the excluded trade is neutralized from the daily ranking equity path; all other trade chronology and fixed-$2,000 sizing remain unchanged",
+    "note": "This is a stock-selection robustness adjustment only. It does not alter F2.2 production, Pine signals, or live exits."
+  }
+}

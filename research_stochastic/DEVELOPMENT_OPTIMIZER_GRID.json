@@ -1,0 +1,123 @@
+{
+  "patch": "2.9.3",
+  "mode": "FULL_FACTORIAL_DEVELOPMENT_ONLY",
+  "development_window": "2015-01-01 through 2024-12-31",
+  "holdout_policy": "2025+ MUST NOT BE LOADED OR SCORED",
+  "common_forecast_panel": {
+    "prefilter_n": 200,
+    "n_paths": 512,
+    "forecast_horizon_days": 20,
+    "checkpoint_every_scan_dates": 20,
+    "simulation": "ADAPTIVE_QE_M_RQMC; CRSP_RET_WEALTH_PRICE; SAME PATHS FOR 4/5/6% STOPS",
+    "prefilter_checkpoint_buffer": 16
+  },
+  "variables": {
+    "max_active_positions": [
+      5,
+      6,
+      8
+    ],
+    "daily_close_stop_pct": [
+      0.04,
+      0.05,
+      0.06
+    ],
+    "alpha_model": [
+      "BALANCED",
+      "PULLBACK_HEAVY",
+      "HUMP_PULLBACK"
+    ],
+    "min_alpha_percentile": [
+      0.8,
+      0.9,
+      0.95
+    ],
+    "max_mc_stop_probability": [
+      0.35,
+      0.4,
+      0.45
+    ],
+    "max_risk_volatility": [
+      0.35,
+      0.5
+    ],
+    "min_market_breadth_200": [
+      0.5,
+      0.55,
+      0.6
+    ]
+  },
+  "fixed": {
+    "entry_schedule": "MONTH_END_ONLY",
+    "target_gross_exposure": 1.0,
+    "max_gross_exposure": 1.0,
+    "max_sector_weight": 1.0,
+    "max_holding_days": 20,
+    "recheck_every_days": 5,
+    "entry_n_paths_exact": 1024,
+    "recheck_n_paths_exact": 512,
+    "transaction_costs": "FROZEN_PROJECT_CONFIG",
+    "stop_execution_model": "DAILY_CLOSE_STOP_PROXY",
+    "monte_carlo_quality": "REQUIRE_CONVERGENCE_AND_MC_MEAN_SE<=0.0015; STOP GATE USES MC_P_STOP + 1.0*MC_P_STOP_SE",
+    "alpha_policy": "Known signal-date total-return price index; trend/pullback recalculated (RSI2 Wilder-like EWMA); external eligible gate remains upstream",
+    "regime_policy": "Full HistoryStore-universe point-in-time economic price / SMA200 breadth, from CRSP-like ret1"
+  },
+  "combination_count": 1458,
+  "folds": [
+    [
+      "2015-01-01",
+      "2016-12-31"
+    ],
+    [
+      "2017-01-01",
+      "2018-12-31"
+    ],
+    [
+      "2019-01-01",
+      "2020-12-31"
+    ],
+    [
+      "2021-01-01",
+      "2022-12-31"
+    ],
+    [
+      "2023-01-01",
+      "2024-12-31"
+    ]
+  ],
+  "screening": {
+    "minimum_closed_trades": 60,
+    "exact_finalists": 30,
+    "progress_every_combinations": 50,
+    "robust_score_weights": {
+      "full_sharpe_percentile": 0.15,
+      "median_fold_sharpe_percentile": 0.2,
+      "portfolio_dollar_profit_factor_percentile": 0.15,
+      "max_drawdown_percentile": 0.15,
+      "worst_fold_return_percentile": 0.25,
+      "positive_fold_fraction_percentile": 0.1
+    },
+    "eligibility_gate": {
+      "minimum_closed_trades": 60,
+      "full_total_return_above": 0.0,
+      "portfolio_dollar_profit_factor_above": 1.0,
+      "folds_with_trades_required": 5,
+      "minimum_positive_fold_fraction": 0.6
+    },
+    "finalist_diversity": "Unique screening trade signatures, round-robin across alpha models; exact finalists pairwise entry Jaccard <=0.85 for top recommendations"
+  },
+  "final_selection": {
+    "top_n": 3,
+    "selection_basis": "EXACT_ROBUST_SCORE_WITH_MAX_ENTRY_JACCARD_0_85",
+    "save_full_equity_trade_event_outputs": true,
+    "maximum_entry_jaccard": 0.85
+  },
+  "stop_caveat": "4-6% close stops evaluated in CRSP RET-reinvested synthetic wealth-price units; gaps realize actual economic return.",
+  "memory_policy": {
+    "full_feature_dataframe": "FORBIDDEN",
+    "history_store": "QUARTERLY_4_COLUMN_CHUNKS; RETURN_CONSISTENT_WEALTH_PRICES_IN_PLACE",
+    "signal_features": "ELIGIBLE ROWS ON MONTH-END/WEEK-END SCAN DATES ONLY PLUS ONE-ROW-PER-DATE MARKET BREADTH AGGREGATE",
+    "exact_finalists": "DYNAMIC ALPHA PREFILTER PARTS PLUS COMPACT HISTORY STORE",
+    "forecast_cube": "ONE SAME-DATE RQMC PATH SET PER SECURITY EVALUATED ACROSS ALL STOP LEVELS"
+  }
+}
